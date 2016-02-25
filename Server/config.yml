@@ -1,0 +1,54 @@
+server:
+  rootPath: /app/*
+  applicationContextPath: /
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081
+  requestLog:
+    timeZone: UTC
+    appenders:
+      - type: file
+        currentLogFilename: ./logs/access.log
+        threshold: ALL
+        archive: true
+        archivedLogFilenamePattern: ./logs/access.%d.log.gz
+        archivedFileCount: 14
+
+database:
+  driverClass: org.h2.Driver
+  user: admin
+  password: admin
+  url: jdbc:h2:file:./h2db/hcapp
+  properties:
+    charSet: UTF-8
+
+  # the maximum amount of time to wait on an empty pool before throwing an exception
+  maxWaitForConnection: 1s
+
+  # the SQL query to run when validating a connection's liveness
+  validationQuery: "/* Health Check */ SELECT 1"
+
+  # the minimum number of connections to keep open
+  minSize: 8
+
+  # the maximum number of connections to keep open
+  maxSize: 32
+
+  # whether or not idle connections should be validated
+  checkConnectionWhileIdle: false
+
+logging:
+  level: INFO
+  loggers:
+    com.hcapp.SimpleWebsite: DEBUG
+  appenders:
+    - type: console
+    - type: file
+      threshold: DEBUG
+      currentLogFilename: ./logs/application.log
+      archivedLogFilenamePattern: ./logs/application-%d{yyyy-MM-dd}-%i.log.gz
+      archivedFileCount: 7
+      timeZone: UTC
